@@ -1,0 +1,11 @@
+echo off
+
+rem ================================================================
+rem This script is an example of how to run startup PowerShell script
+rem from the command line or Windows Scheduled task.
+rem ================================================================
+
+set runscript=D:\THEDIR\bin\Ponderosa_Electricity_Usage.ps1
+set iniFile=D:\THEDIR\Ponderosa_Electricity_Usage.ini
+
+powershell.exe %runscript% -iniFile %iniFile%
