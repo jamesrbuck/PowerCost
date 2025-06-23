@@ -16,6 +16,8 @@ emu-power 1.51: https://pypi.org/project/emu-power/
 
 ## Program Structure
 
+![](doc/PowerCost_Architecture.png)
+
 ### Overview
 
 The EMU-2 reports the instantaneous electricity usage when queried.  It returns a value in Kilowatt Hours (kWh) as if that amount was used for a full hour.  I wanted to get a total of electricity used for each whole hour.  I decided to take a reading every minute and add that value to an accumulator.  At the end of the hour, the script divides that amount by the number of readings which is usually 60.  This value is written to a tab-separated file.
