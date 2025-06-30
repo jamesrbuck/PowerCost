@@ -4,7 +4,7 @@ import time
 import os
 
 
-dbConfig  = {'user': 'james', 'password': 'Chegwas3006', 'host': 'localhost', 'database': 'pse', 'raise_on_warnings': True}
+dbConfig  = {'user': 'U', 'password': 'P', 'host': 'localhost', 'database': 'pse', 'raise_on_warnings': True}
 
 mytime    = time.localtime()
 myDate    = time.strftime('%Y-%m-%d', mytime)

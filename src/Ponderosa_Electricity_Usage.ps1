@@ -1,6 +1,14 @@
 # =============================================================================
-# Script Ponderosa_Electricity_Usage.ps1
+# Script ponderosa_electricity_usage.ps1
 # =============================================================================
+# Filename: ponderosa_electricity_usage.ps1
+# Author: James Buck
+# Created: 2025-06-264
+# Last Modified: 2025-06-26
+# Description: This script uses Start-Process to spawn a Python script via
+#              pythonw.exe into the background in Windows.
+# =============================================================================
+
 
 # -------------------------
 # Get INI file as parameter
@@ -36,7 +44,6 @@ function Read-Ini ($filePath) {
 # Read INI settings
 # -----------------
 $iniSettings  = Read-Ini $iniFile
-# "D:\u\apps\powercost\Ponderosa_Electricity_Usage.ini"
 
 $rundir = $iniSettings["powershell"]["rundir"]
 Set-Location -Path $rundir
@@ -49,11 +56,16 @@ $python_exec = $iniSettings["powershell"]["python_exec"]
 # Set timestamp to be used in the log file.
 $ts   = Get-Date -Format "yyyyMMdd-HHmm"
 $log = $rundir + "\logs\PEU_$ts" + "_Startup.txt"
+#$log_start_stdout = $rundir + "\logs\PEU_$ts" + "_stdout.txt"
+#$log_start_stderr = $rundir + "\logs\PEU_$ts" + "_stderr.txt"
+
+$now   = Get-Date -Format "MM/dd/yyyy HH:mm:ss"
 
 # Run Python Script
 # -----------------
 $Stream = [System.IO.StreamWriter]::new($log)
-$Stream.WriteLine("Ponderosa_Electricty_Usage.ps1: Script entered.")
+$Stream.WriteLine("ponderosa_electricty_usage.ps1: Script entered.")
+$Stream.WriteLine("   TIME           = $now")
 $Stream.WriteLine("   rundir         = $rundir")
 $Stream.WriteLine("   python_exec    = $python_exec")
 $Stream.WriteLine("   python_script  = $python_script")
@@ -71,6 +83,8 @@ $processOptions = @{
     PassThru = $true
 }
 $process = Start-Process @processOptions
+#    RedirectStandardOutput = $log_start_stdout
+#    RedirectStandardError = $log_start_stderr
 
 $Stream.WriteLine("   PID            = " + $process.Id)
 $Stream.WriteLine("   Name           = " + $process.Name)

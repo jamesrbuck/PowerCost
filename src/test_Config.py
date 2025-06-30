@@ -1,9 +1,9 @@
-from PonderosaConfig import PonderosaConfig
+from ponderosa_config import PonderosaConfig
 from time import time, ctime
 import time
 import os
 
-INI = "D:/git/powercost/src/Ponderosa_Electricity_Usage.ini"
+INI = "D:/THEDIR/ponderosa_electricity_usage.ini"
 startTS = time.strftime('%Y%m%d-%H%M%S', time.localtime())
 PC = PonderosaConfig(INI,startTS)
 
