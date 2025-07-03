@@ -27,6 +27,7 @@ import signal
 import decimal
 import argparse
 import logging
+import logging.config
 from emu_power import Emu
 from ponderosa_config import PonderosaConfig
 from ponderosa_db import PonderosaDB
@@ -57,15 +58,31 @@ class PonderosaMonitor:
         '''
         Set up logging based on settings in INI file.
         '''
-        logging.basicConfig(
-            filename=self.log_path,
-            filemode='w',
-            encoding='utf-8',
-            level=self.log_level,
-            format='%(asctime)s | %(funcName)s:%(lineno)s | %(levelname)s | %(message)s',
-            datefmt='%Y-%m-%d-%H:%M:%S'
-        )
-        logging.info("Logging initialized.")
+        logging_config  = {
+            'version': 1,
+            'disable_existing_loggers': False,
+            'formatters': {
+                'default': {
+                    'format': '%(asctime)s | %(funcName)s:%(lineno)s | %(levelname)s | %(message)s',
+                },
+            },
+            'handlers': {
+                'stderr_handler': {
+                    'level': self.log_level,
+                    'formatter': 'default',
+                    'class': 'logging.StreamHandler',
+                    'stream': 'ext://sys.stderr',
+                },
+            },
+            'loggers': {
+                '': {  # root logger
+                    'handlers': ['stderr_handler'],
+                    'level': self.log_level,
+                    'propagate': True
+                },
+            }
+        }
+        logging.config.dictConfig(logging_config)
 
     def setup_signal_handler(self):
         '''
@@ -73,11 +90,12 @@ class PonderosaMonitor:
         report being killed from the OS.
         '''
         def handler(sig):
-            logging.warning("Signal %s received. Cleaning up and exiting.", sig)
+            logging.warning("PEU: Signal %s received. Cleaning up and exiting.", sig)
             if os.path.exists(self.running_file):
                 os.remove(self.running_file)
             if os.path.exists(self.stop_file):
                 os.remove(self.stop_file)
+            logging.shutdown()
             sys.exit(0)
         signal.signal(signal.SIGINT, handler)
         signal.signal(signal.SIGTERM, handler)
@@ -88,10 +106,11 @@ class PonderosaMonitor:
         this daemon-like program should stop (gracefully).
         '''
         if os.path.exists(self.stop_file):
-            logging.info("Stop file %s detected.", self.stop_file)
+            logging.warning("PEU: Stop file %s detected.", self.stop_file)
             os.remove(self.stop_file)
             if os.path.exists(self.running_file):
                 os.remove(self.running_file)
+            logging.shutdown()
             sys.exit(1)
 
     def check_already_running(self):
@@ -105,13 +124,15 @@ class PonderosaMonitor:
         writing daemons.
         '''
         if os.path.exists(self.running_file):
-            logging.warning("Script already running. Exiting.")
+            logging.warning("PEU: Script already running. Exiting.")
+            logging.shutdown()
             os.remove(self.running_file)
             sys.exit(0)
 
         with open(self.running_file, 'w', encoding="utf-8") as f:
-            f.write(str(self.pid))
-        logging.info("check_already_running(): Created running file")
+            write_str = f"taskkill /f /pid {str(self.pid)}"
+            f.write(write_str)
+        logging.info("PEU: check_already_running(): Created running file")
 
     def wait_until_top_of_hour(self):
         '''
@@ -126,7 +147,6 @@ class PonderosaMonitor:
 
         self.check_stop_file()
 
-        logging.info("Sleeping %s seconds until top of the hour.", sleep_time)
         time.sleep(sleep_time)
 
         self.check_stop_file()
@@ -137,14 +157,13 @@ class PonderosaMonitor:
         time.
         '''
         for attempt in range(1, self.MAX_RETRIES + 1):
-            if self.log_level == "DEBUG":
-                self.emu = Emu(debug=True, fresh_only=True, timeout=5, synchronous=True)
-            else:
+            if self.log_level == 'INFO':
                 self.emu = Emu(debug=False, fresh_only=True, timeout=5, synchronous=True)
+            else:
+                self.emu = Emu(debug=True, fresh_only=True, timeout=5, synchronous=True)
             if self.emu.start_serial(self.config.the_port):
-                logging.info("Serial connection established on %s", self.config.the_port)
                 return
-            logging.warning("Serial connection attempt %i failed.", attempt)
+            logging.warning("PEU: Serial connection attempt %i failed.", attempt)
             time.sleep(5)
         raise RuntimeError("Failed to start serial connection.")
 
@@ -156,7 +175,7 @@ class PonderosaMonitor:
             response = self.emu.get_instantaneous_demand()
             if response:
                 return response
-            logging.warning("Demand read attempt %i failed.", attempt)
+            logging.warning("PEU: read_demand(): Demand read attempt %i failed.", attempt)
             time.sleep(10)
         raise RuntimeError("Failed to read demand after multiple attempts.")
 
@@ -165,7 +184,7 @@ class PonderosaMonitor:
         Almost all of the logic is in this method.  Only the acquisition of the
         parameters is done in main().
         '''
-        logging.info("run(): Time is %s, PID = %s", now_str, pid)
+        logging.info("PEU: run(): Time is %s, PID = %s", now_str, pid)
 
         self.check_already_running()
         self.check_stop_file()
@@ -174,7 +193,7 @@ class PonderosaMonitor:
         self.start_serial()
         self.wait_until_top_of_hour()
 
-        the_date_prev = ""
+        the_date_prev = None
         the_hour_last = -1
         kwh_day = 0
         minute_sum = 0
@@ -182,9 +201,7 @@ class PonderosaMonitor:
 
         with PonderosaDB(self.config.db_config) as self.db:
             while True:
-                if os.path.exists(self.stop_file):
-                    logging.warning("Stop file detected. Exiting.")
-                    break
+                self.check_stop_file()
 
                 now = time.localtime()
                 date_str = time.strftime('%Y-%m-%d', now)
@@ -214,7 +231,9 @@ class PonderosaMonitor:
                     self.start_serial()
 
                 if the_date_prev != date_str:
-                    logging.info("New day: %s, Total kWh yesterday: %.3f}", date_str, kwh_day)
+                    if the_date_prev is not None:
+                        logging.info("PEU: New day: %s, Total kWh yesterday: %.3f}",
+                                     date_str, kwh_day)
                     the_date_prev = date_str
                     kwh_day = 0
 

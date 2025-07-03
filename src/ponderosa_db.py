@@ -38,11 +38,9 @@ class PonderosaDB:
             self.conn = mysql.connector.connect(**self.db_config)
             if not self.conn.is_connected():
                 raise ConnectionError("Connection to MySQL failed.")
-            db_dict = self.as_dict()
-            logging.info("Database connection established: %s", str(db_dict))
+            logging.info("PEU: Database connection established")
         except Error as err:
-            logging.info("Database connection: %s", str(db_dict))
-            logging.error("Database connection error: %s", err)
+            logging.error("PEU: Database connection error: %s", err)
             raise
 
     def close(self):
@@ -51,7 +49,7 @@ class PonderosaDB:
         """
         if self.conn and self.conn.is_connected():
             self.conn.close()
-            logging.debug("Database connection closed.")
+            logging.debug("PEU: Database connection closed.")
 
     def insert_usage(self, date_str, hour_str, kwh):
         """
@@ -75,7 +73,7 @@ class PonderosaDB:
             with self.conn.cursor() as cursor:
                 cursor.execute(insert_stmt, values)
                 self.conn.commit()
-                logging.debug("INSERT: insert_stmt = %s, values = date_str=%s, hour_str=%s, kwh=%s",
+                logging.debug("PEU: INSERT: insert_stmt = %s, values = date_str=%s, hour_str=%s, kwh=%s",
                               insert_stmt, date_str, hour_str, kwh)
         except Error as err:
             logging.error("Failed to insert usage data: %s", err)

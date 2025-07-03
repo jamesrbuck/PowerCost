@@ -56,8 +56,8 @@ $python_exec = $iniSettings["powershell"]["python_exec"]
 # Set timestamp to be used in the log file.
 $ts   = Get-Date -Format "yyyyMMdd-HHmm"
 $log = $rundir + "\logs\PEU_$ts" + "_Startup.txt"
-#$log_start_stdout = $rundir + "\logs\PEU_$ts" + "_stdout.txt"
-#$log_start_stderr = $rundir + "\logs\PEU_$ts" + "_stderr.txt"
+$log_start_stdout = $rundir + "\logs\PEU_$ts" + "_stdout.txt"
+$log_start_stderr = $rundir + "\logs\PEU_$ts" + "_stderr.txt"
 
 $now   = Get-Date -Format "MM/dd/yyyy HH:mm:ss"
 
@@ -81,10 +81,10 @@ $processOptions = @{
     WorkingDirectory = $rundir
     NoNewWindow = $true
     PassThru = $true
+    RedirectStandardOutput = $log_start_stdout
+    RedirectStandardError = $log_start_stderr
 }
 $process = Start-Process @processOptions
-#    RedirectStandardOutput = $log_start_stdout
-#    RedirectStandardError = $log_start_stderr
 
 $Stream.WriteLine("   PID            = " + $process.Id)
 $Stream.WriteLine("   Name           = " + $process.Name)
