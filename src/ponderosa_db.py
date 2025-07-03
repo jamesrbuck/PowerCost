@@ -73,8 +73,9 @@ class PonderosaDB:
             with self.conn.cursor() as cursor:
                 cursor.execute(insert_stmt, values)
                 self.conn.commit()
-                logging.debug("PEU: INSERT: insert_stmt = %s, values = date_str=%s, hour_str=%s, kwh=%s",
-                              insert_stmt, date_str, hour_str, kwh)
+                logging.debug(
+                    "PEU: INSERT: insert_stmt = %s, values = date_str=%s, hour_str=%s, kwh=%s",
+                    insert_stmt, date_str, hour_str, kwh)
         except Error as err:
             logging.error("Failed to insert usage data: %s", err)
             self.conn.rollback()
