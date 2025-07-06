@@ -111,7 +111,8 @@ class PonderosaMonitor:
             if os.path.exists(self.running_file):
                 os.remove(self.running_file)
             logging.shutdown()
-            sys.exit(1)
+            os.kill(self.pid, signal.SIGTERM)
+            sys.exit(1)  #
 
     def check_already_running(self):
         '''
@@ -205,7 +206,7 @@ class PonderosaMonitor:
 
                 now = time.localtime()
                 date_str = time.strftime('%Y-%m-%d', now)
-                hour_str = time.strftime('%H:00:00', now)
+                ##hour_str = time.strftime('%H:00:00', now)
                 current_hour = int(time.strftime('%H', now))
 
                 response = self.read_demand()
@@ -218,9 +219,10 @@ class PonderosaMonitor:
                     minute_sum += kw
                     minute_count += 1
                 else:
+                    the_hour_last_str = f"{the_hour_last:02d}:00:00"
                     if minute_count > 0:
                         avg_kwh = minute_sum / minute_count
-                        self.db.insert_usage(date_str, hour_str, avg_kwh)
+                        self.db.insert_usage(date_str, the_hour_last_str, avg_kwh)
                         kwh_day += avg_kwh
                     minute_sum = kw
                     minute_count = 1
