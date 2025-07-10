@@ -1,6 +1,5 @@
 README.md
 pyproject.toml
-src/cli.py
 src/powercost.egg-info/PKG-INFO
 src/powercost.egg-info/SOURCES.txt
 src/powercost.egg-info/dependency_links.txt
@@ -8,6 +7,7 @@ src/powercost.egg-info/entry_points.txt
 src/powercost.egg-info/requires.txt
 src/powercost.egg-info/top_level.txt
 src/powercost_project/__init__.py
+src/powercost_project/__main__.py
 src/powercost_project/config.py
 src/powercost_project/database.py
 src/powercost_project/main.py

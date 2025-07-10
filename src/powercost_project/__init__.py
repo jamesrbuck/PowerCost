@@ -2,7 +2,7 @@
 For powercost package.
 """
 
-__version__ = "1.0.0"
+__version__ = "2.1.0"
 
 import time
 import os
@@ -18,4 +18,4 @@ now = time.localtime()
 now_str = time.strftime("%Y-%m-%d %H:%M:%S", now)
 pid = os.getpid()
 print(f"__init__.py: Package powercost is being initialized. name={__name__}")
-print(f"   Time is {now_str}, PID = {pid}", flush=True)
+print(f"   Time is {now_str}, PID = {pid}\n", flush=True)
