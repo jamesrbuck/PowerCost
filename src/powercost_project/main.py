@@ -67,16 +67,22 @@ class PonderosaMonitor:
                 },
             },
             'handlers': {
-                'stderr_handler': {
+                #'stderr_handler': {
+                #    'level': self.log_level,
+                #    'formatter': 'default',
+                #    'class': 'logging.StreamHandler',
+                #    'stream': 'ext://sys.stderr',
+                #},
+                'file_handler': {
                     'level': self.log_level,
                     'formatter': 'default',
-                    'class': 'logging.StreamHandler',
-                    'stream': 'ext://sys.stderr',
+                    'class': 'logging.FileHandler',
+                    'filename': self.log_path,
                 },
             },
             'loggers': {
                 '': {  # root logger
-                    'handlers': ['stderr_handler'],
+                    'handlers': ['file_handler'],
                     'level': self.log_level,
                     'propagate': True
                 },
@@ -185,7 +191,7 @@ class PonderosaMonitor:
         Almost all of the logic is in this method.  Only the acquisition of the
         parameters is done in main().
         '''
-        logging.info("PEU: run(): Time is %s, PID = %s", now_str, pid)
+        logging.info("PEU: main.py - PonderosaMonitor.run(): Time is %s, PID = %s", now_str, pid)
 
         self.check_already_running()
         self.check_stop_file()

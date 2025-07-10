@@ -67,16 +67,22 @@ class PonderosaMonitor:
                 },
             },
             'handlers': {
-                'stderr_handler': {
+                #'stderr_handler': {
+                #    'level': self.log_level,
+                #    'formatter': 'default',
+                #    'class': 'logging.StreamHandler',
+                #    'stream': 'ext://sys.stderr',
+                #},
+                'file_handler': {
                     'level': self.log_level,
                     'formatter': 'default',
-                    'class': 'logging.StreamHandler',
-                    'stream': 'ext://sys.stderr',
+                    'class': 'logging.FileHandler',
+                    'filename': self.log_path,
                 },
             },
             'loggers': {
                 '': {  # root logger
-                    'handlers': ['stderr_handler'],
+                    'handlers': ['file_handler'],
                     'level': self.log_level,
                     'propagate': True
                 },

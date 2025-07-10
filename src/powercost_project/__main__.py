@@ -1,11 +1,13 @@
 """
-Entry point for project
+Entry point for project.  _init__.py does not do much.
 """
 # src/powercostcli.py
 
 import os
 import time
 import argparse
+import logging
+
 
 from  powercost_project import PonderosaMonitor
 
@@ -13,16 +15,19 @@ def main(ini_path: str):
     """
     Entry Point - Only method
     """
+    pid = os.getpid()
+
     now = time.localtime()
     now_str = time.strftime("%Y-%m-%d %H:%M:%S", now)
-    pid = os.getpid()
-    print(f"__main__.py: Time is {now_str}, PID = {pid}", flush=True)
 
-    monitor = PonderosaMonitor(ini_path=args.ini)
+    monitor = PonderosaMonitor(ini_path=ini_path)
+    logging.info("__main__.py: Time is %s, PID = %s", now_str, pid)
     monitor.run(now_str=now_str, pid=pid)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--ini', required=True, help='Path to the INI configuration file')
     args = parser.parse_args()
-    main(ini_path=args.ini)
+    args_ini: str = args.ini
+
+    main(ini_path=args_ini)

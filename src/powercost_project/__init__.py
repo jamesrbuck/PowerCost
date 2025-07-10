@@ -2,7 +2,7 @@
 For powercost package.
 """
 
-__version__ = "2.1.0"
+__version__ = "2.2.0"
 
 import time
 import os
@@ -14,8 +14,8 @@ from .main import PonderosaMonitor
 __all__ = ["PonderosaMonitor"]
 
 # Optional: Run initialization code when the package is imported
-now = time.localtime()
-now_str = time.strftime("%Y-%m-%d %H:%M:%S", now)
-pid = os.getpid()
-print(f"__init__.py: Package powercost is being initialized. name={__name__}")
-print(f"   Time is {now_str}, PID = {pid}\n", flush=True)
+#now = time.localtime()
+#now_str = time.strftime("%Y-%m-%d %H:%M:%S", now)
+#pid = os.getpid()
+#print(f"__init__.py: Package powercost is being initialized. name={__name__}")
+#print(f"   Time is {now_str}, PID = {pid}\n", flush=True)
