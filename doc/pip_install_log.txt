@@ -1,0 +1,27 @@
+# The following command installed the code into D:\Python\Lib\site-packages\powercost
+
+D:\git\powercost>pip install .
+Processing d:\git\powercost
+  Installing build dependencies ... done
+  Getting requirements to build wheel ... done
+  Preparing metadata (pyproject.toml) ... done
+Collecting emu_power (from powercost==1.0.0)
+  Downloading emu_power-1.51-py3-none-any.whl.metadata (3.6 kB)
+Collecting mysql.connector (from powercost==1.0.0)
+  Downloading mysql-connector-2.2.9.tar.gz (11.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 11.9/11.9 MB 5.8 MB/s eta 0:00:00
+  Installing build dependencies ... done
+  Getting requirements to build wheel ... done
+  Preparing metadata (pyproject.toml) ... done
+Requirement already satisfied: pyserial in d:\python\lib\site-packages (from emu_power->powercost==1.0.0) (3.5)
+Downloading emu_power-1.51-py3-none-any.whl (8.5 kB)
+Building wheels for collected packages: powercost, mysql.connector
+  Building wheel for powercost (pyproject.toml) ... done
+  Created wheel for powercost: filename=powercost-1.0.0-py3-none-any.whl size=9840 sha256=6d862495c8b3ca31cc9e065c9d4d2d4b9cfaef89ad678039ec0f16937cfa9b55
+  Stored in directory: C:\Users\james\AppData\Local\Temp\pip-ephem-wheel-cache-jql5koaq\wheels\96\d9\62\f760162d64e067d4ca91c0673009d8e93a7494b42bb4f3ed60
+  Building wheel for mysql.connector (pyproject.toml) ... done
+  Created wheel for mysql.connector: filename=mysql_connector-2.2.9-cp313-cp313-win_amd64.whl size=248050 sha256=1b90d22d6ebf0a927c1f2c6811db7db365d75084c7a90d67ca3cd1878c2bfbf2
+  Stored in directory: c:\users\james\appdata\local\pip\cache\wheels\4e\c1\23\9423c444a75266a05275c80ebf5c6efe2368388e976b690a0f
+Successfully built powercost mysql.connector
+Installing collected packages: mysql.connector, emu_power, powercost
+Successfully installed emu_power-1.51 mysql.connector-2.2.9 powercost-1.0.0

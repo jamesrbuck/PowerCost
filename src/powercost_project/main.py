@@ -25,12 +25,12 @@ import os
 import time
 import signal
 import decimal
-import argparse
 import logging
 import logging.config
+
 from emu_power import Emu
-from ponderosa_config import PonderosaConfig
-from ponderosa_db import PonderosaDB
+from .config import PonderosaConfig
+from .database import PonderosaDB
 
 class PonderosaMonitor:
     """
@@ -244,23 +244,23 @@ class PonderosaMonitor:
                 self.check_stop_file()
 
 
-def main():
-    """
-    main() is second call after Python detects the script is being run on its
-    own via the __name__ value.  It grabs the parameters, instantiates the
-    monitor class and call the run() method.
-    """
-    now = time.localtime()
-    now_str = time.strftime("%Y-%m-%d %H:%M:%S", now)
-    pid = os.getpid()
-    print(f"main(): Time is {now_str}, PID = {pid}", flush=True)
+# def main():
+#     """
+#     main() is second call after Python detects the script is being run on its
+#     own via the __name__ value.  It grabs the parameters, instantiates the
+#     monitor class and call the run() method.
+#     """
+#     now = time.localtime()
+#     now_str = time.strftime("%Y-%m-%d %H:%M:%S", now)
+#     pid = os.getpid()
+#     print(f"name={__name__}, main(): Time is {now_str}, PID = {pid}", flush=True)
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--ini', required=True, help='Path to the INI configuration file')
-    args = parser.parse_args()
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument('--ini', required=True, help='Path to the INI configuration file')
+#     args = parser.parse_args()
 
-    monitor = PonderosaMonitor(ini_path=args.ini)
-    monitor.run(now_str=now_str, pid=pid)
+#     monitor = PonderosaMonitor(ini_path=args.ini)
+#     monitor.run(now_str=now_str, pid=pid)
 
-if __name__ == '__main__':
-    main()
+#if __name__ == '__main__':
+#    main()

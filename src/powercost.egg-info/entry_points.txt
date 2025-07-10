@@ -1,0 +1,5 @@
+[console_scripts]
+powercost-cli = powercost:main_cli
+
+[gui_scripts]
+powercost-gui = powercost:main_cli

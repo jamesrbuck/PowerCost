@@ -1,11 +1,13 @@
-from ponderosa_config import PonderosaConfig
-from time import time, ctime
-import time
-import os
+"""
+Test primary configuration PonderosaConfig
+"""
+from time import time
+
+import powercost_project.config
 
 INI = "D:/THEDIR/ponderosa_electricity_usage.ini"
 startTS = time.strftime('%Y%m%d-%H%M%S', time.localtime())
-PC = PonderosaConfig(INI,startTS)
+PC = powercost_project.PonderosaConfig(INI,startTS)
 
 log_dir  = PC.getlog_dir()
 log_file = PC.getlog_file()

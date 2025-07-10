@@ -1,0 +1,2 @@
+emu_power
+mysql.connector

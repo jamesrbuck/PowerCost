@@ -45,19 +45,19 @@ function Read-Ini ($filePath) {
 # -----------------
 $iniSettings  = Read-Ini $iniFile
 
-$rundir = $iniSettings["powershell"]["rundir"]
-Set-Location -Path $rundir
+$run_dir = $iniSettings["powershell"]["run_dir"]
+Set-Location -Path $run_dir
 
-$python_script = $rundir + "\" + $iniSettings["powershell"]["python_script"]
+$python_script = $iniSettings["powershell"]["python_script"]
 
 # Usually = pythonw.exe to rRun without DOS terminal window on Windows
 $python_exec = $iniSettings["powershell"]["python_exec"]
 
 # Set timestamp to be used in the log file.
 $ts   = Get-Date -Format "yyyyMMdd-HHmm"
-$log = $rundir + "\logs\PEU_$ts" + "_Startup.txt"
-$log_start_stdout = $rundir + "\logs\PEU_$ts" + "_stdout.txt"
-$log_start_stderr = $rundir + "\logs\PEU_$ts" + "_stderr.txt"
+$log = $run_dir + "\logs\PEU_$ts" + "_Startup.txt"
+$log_start_stdout = $run_dir + "\logs\PEU_$ts" + "_stdout.txt"
+$log_start_stderr = $run_dir + "\logs\PEU_$ts" + "_stderr.txt"
 
 $now   = Get-Date -Format "MM/dd/yyyy HH:mm:ss"
 
@@ -66,7 +66,7 @@ $now   = Get-Date -Format "MM/dd/yyyy HH:mm:ss"
 $Stream = [System.IO.StreamWriter]::new($log)
 $Stream.WriteLine("ponderosa_electricty_usage.ps1: Script entered.")
 $Stream.WriteLine("   TIME           = $now")
-$Stream.WriteLine("   rundir         = $rundir")
+$Stream.WriteLine("   run_dir        = $run_dir")
 $Stream.WriteLine("   python_exec    = $python_exec")
 $Stream.WriteLine("   python_script  = $python_script")
 $Stream.WriteLine("   log            = $log")
@@ -78,7 +78,7 @@ $Stream.WriteLine("   iniFile        = $iniFile")
 $processOptions = @{
     FilePath = $python_exec
     ArgumentList = "$python_script --ini $iniFile"
-    WorkingDirectory = $rundir
+    WorkingDirectory = $run_dir
     NoNewWindow = $true
     PassThru = $true
     RedirectStandardOutput = $log_start_stdout
