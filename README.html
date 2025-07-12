@@ -1,0 +1,111 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title></title></head><body><h1>Powercost</h1>
+<h2>Motivation</h2>
+<p>Puget Sound Energy (PSE) was selling a device, <strong>Rainforest Automation EMU-2</strong>, to allow customers to find out how much electricity each appliance uses in an effort to reduce electricity usage.  A customer would put batteries in the unit, walk around and turn on and off various appliances to see the usage.</p>
+<p>My intent was to track my electricity usage over time, usually on a daily basis.  PSE billing is once per month which was too late to see a spike in usage. I searched for any program that used the EMU-2 and found the Python module emu_power Version 1.51.  emu_power is based on the XML specification for the Rainforest Raven API. PSE charges different amounts per kWh once the total for the month is known.  kWh ranges got charged more per kWh as total electricity is known.</p>
+<p>This project then developed into a great opportunity to improve my Python programming skills.  Later changes included morphing my code into more Object Oriented style, adding Python logging and then converting it into a Python module for easier installation.</p>
+<h2>Project Description</h2>
+<p>This Python project interfaces via USB to a hardware device that wirelessly connects to a Puget Sound Energy electrical power meter where it receives an instantaneous kWh reading.  The code takes 60 readings once a minute for an hour, sums them, and calculates an averaged amount of kWh for that hour.  It then inserts that reading into a MySQL database.  Another database could be used with another driver.  The end user can use SQL to select any number of rows to derive daily, weekly, etc counts which can be inserted into an Excel spreadsheet for charting.</p>
+<p><img src="doc/PSE_Power_Meter.jpg" alt="" /></p>
+<h2>Installation</h2>
+<p>Copy project to your PC, change to the root folder of the project and run the following command.  The code needs a Python library for MySQL as an installed MySQL database with a configured table.</p>
+<p><em>To Do: Add step to put project into a ZIP file or something.</em></p>
+<pre><code>python install .
+</code></pre>
+<h2>Execution and usage: Windows</h2>
+<p>The following example is for a Windows PC.  pythonw.exe is used to submit the code to run in the background without a GUI window.  The end user would need to use nohup to run it on Linux.  No output is expected on stdout and stderr as Python logging is used.
+<em>To Do: Verify code works on Linux.</em></p>
+<pre><code>powershell.exe -File runme.ps1
+</code></pre>
+<p>runme1.ps1</p>
+<pre><code>$project = &quot;-m powercost_project&quot;
+$iniFile = &quot;D:\u\apps\powercost\ponderosa_electricity_usage.ini&quot;
+$log_start_stdout = &quot;logs/powercost_stdout.txt&quot;
+$log_start_stderr = &quot;logs/powercost_stderr.txt&quot;
+
+$processOptions = @{
+    FilePath = &quot;pythonw.exe&quot;
+    ArgumentList = &quot;$project --ini $iniFile&quot;
+    WorkingDirectory = &quot;.&quot;
+    NoNewWindow = $true
+    PassThru = $true
+    RedirectStandardOutput = $log_start_stdout
+    RedirectStandardError = $log_start_stderr
+}
+$process = Start-Process @processOptions
+
+Write-Output &quot;Code sumitted, PID = &quot; + $process.Id
+
+</code></pre>
+<p>On my Windows 11 desktop PC and Ubuntu 24.04 LTS laptop, there are different designations for port:</p>
+<ul>
+<li>Windows Port: COM5</li>
+<li>Linux Port: /dev/ttyACM0</li>
+</ul>
+<p><img src="doc/WIndows_Ports.jpg" alt="" /></p>
+<h2>Used technologies</h2>
+<ul>
+<li>Python library emu_power that interfaces with the Rainforest Automation device. emu-power 1.51: <a href="https://pypi.org/project/emu-power/">https://pypi.org/project/emu-power/</a></li>
+<li>Rainforest Automation EMU-2</li>
+<li>MySQL</li>
+</ul>
+<p><img src="doc/Rainforest_Automation_EMU-2.jpg" alt="" /></p>
+<h2>Database Setup</h2>
+<p>Primary MySQL Database Table pse.usage_e</p>
+<p><img src="doc/Table_pse.usage_e.png" alt="" /></p>
+<p><strong>Important Data Items</strong></p>
+<ul>
+<li><strong>ID</strong>: Type = INT; Automatically incrementing row counter for uniquness.  This value is not intended to be retrieved by later SQL.  This column is the primary key and is sole content of the Unique Index I_USAGE_E_UNIQUE.</li>
+<li><strong>UDate</strong>: Type = DATE; Stores the date of the hourly row insertion.</li>
+<li><strong>UTime</strong>: Type = TIME; Stores the time of the hourly row insertion.</li>
+<li><strong>kWh</strong>: Type = DECIMAL(7,3); The kilowatt-hour reading for an hour to three decimal digit accuracy.</li>
+</ul>
+<p><strong>DB_setup.sql</strong></p>
+<pre><code>create database pse
+
+use pse;
+
+CREATE TABLE `pse`.`usage_e` (
+  `ID` INT NOT NULL AUTO_INCREMENT,
+  `UDate` DATE NOT NULL,
+  `UTime` TIME NOT NULL,
+  `kWh` DECIMAL(7,3) NULL DEFAULT 0.0,
+  PRIMARY KEY (`ID`),
+  UNIQUE INDEX `I_USAGE_E_UNIQUE` (`ID` ASC) VISIBLE)
+COMMENT = 'Puget Sound Energy Electricity Usage for The Ponderosa';
+</code></pre>
+<h3>Sample Selects</h3>
+<p><strong>DB_hourly.sql</strong></p>
+<pre><code>use pse;
+
+select
+   UDate,
+   substring(UTime,1,5) as the_hour,
+   kWh
+from
+   usage_e
+order by
+   ID desc;
+</code></pre>
+<p><strong>DB_daily.sql</strong></p>
+<pre><code>use pse;
+
+select
+   UDate as Date
+   ,ELT(dayofweek(UDate),'Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday') as DoW
+   ,round(sum(kWh)/count(kWh),3) as kWh_Hr_avg
+   ,count(kWh) as hours
+   ,sum(kWh) as kWh_day_total
+   ,round(((sum(kWh)/count(kWh))*24*0.105),2) as kWh_day_total_cost
+   ,round((sum(kWh)/count(kWh))*24,3) as kWh_24hr_est
+from
+   usage_e
+where
+   UDate &gt;='2022-11-05' and
+   UDate &lt;='2022-12-04'
+group by
+   UDate
+order by
+   UDate
+;
+</code></pre>
+</body></html>

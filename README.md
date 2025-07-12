@@ -1,23 +1,79 @@
-# Track My Usage of Electricity
+# Powercost
 
 ## Motivation
 
 Puget Sound Energy (PSE) was selling a device, **Rainforest Automation EMU-2**, to allow customers to find out how much electricity each appliance uses in an effort to reduce electricity usage.  A customer would put batteries in the unit, walk around and turn on and off various appliances to see the usage.
 
-My intent was to track my electricity usage over time, usually on a daily basis.  PSE billing is once per month which was too late to see a spike in usage. I searched for any program that used the EMU-2 and found the Python module emu_power Version 1.51.  emu_power is based on the XML specification for the Rainforest Raven API.
+My intent was to track my electricity usage over time, usually on a daily basis.  PSE billing is once per month which was too late to see a spike in usage. I searched for any program that used the EMU-2 and found the Python module emu_power Version 1.51.  emu_power is based on the XML specification for the Rainforest Raven API. PSE charges different amounts per kWh once the total for the month is known.  kWh ranges got charged more per kWh as total electricity is known.
 
-The same Python script could run on Linux and Windows computers with the only difference being the I/O port name.  I initially started on a Raspberry Pi but needed a robust PC which happened to be my Windows 11 PC.
+This project then developed into a great opportunity to improve my Python programming skills.  Later changes included morphing my code into more Object Oriented style, adding Python logging and then converting it into a Python module for easier installation.
 
-emu-power 1.51: https://pypi.org/project/emu-power/
+## Project Description
 
-**Device I/O**
+This Python project interfaces via USB to a hardware device that wirelessly connects to a Puget Sound Energy electrical power meter where it receives an instantaneous kWh reading.  The code takes 60 readings once a minute for an hour, sums them, and calculates an averaged amount of kWh for that hour.  It then inserts that reading into a MySQL database.  Another database could be used with another driver.  The end user can use SQL to select any number of rows to derive daily, weekly, etc counts which can be inserted into an Excel spreadsheet for charting.
+
+![](doc/PSE_Power_Meter.jpg)
+
+## Installation
+
+Copy project to your PC, change to the root folder of the project and run the following command.  The code needs a Python library for MySQL as an installed MySQL database with a configured table.
+
+*To Do: Add step to put project into a ZIP file or something.*
+
 ```
-Windows Port: COM5
-Linux Port: /dev/ttyACM0
+python install .
 ```
+
+## Execution and usage: Windows
+
+The following example is for a Windows PC.  pythonw.exe is used to submit the code to run in the background without a GUI window.  The end user would need to use nohup to run it on Linux.  No output is expected on stdout and stderr as Python logging is used.
+ *To Do: Verify code works on Linux.*
+ 
+```
+powershell.exe -File runme.ps1
+```
+
+runme1.ps1
+
+```
+$project = "-m powercost_project"
+$iniFile = "D:\u\apps\powercost\ponderosa_electricity_usage.ini"
+$log_start_stdout = "logs/powercost_stdout.txt"
+$log_start_stderr = "logs/powercost_stderr.txt"
+
+$processOptions = @{
+    FilePath = "pythonw.exe"
+    ArgumentList = "$project --ini $iniFile"
+    WorkingDirectory = "."
+    NoNewWindow = $true
+    PassThru = $true
+    RedirectStandardOutput = $log_start_stdout
+    RedirectStandardError = $log_start_stderr
+}
+$process = Start-Process @processOptions
+
+Write-Output "Code sumitted, PID = " + $process.Id
+
+```
+
+
+On my Windows 11 desktop PC and Ubuntu 24.04 LTS laptop, there are different designations for port:
+
+* Windows Port: COM5
+* Linux Port: /dev/ttyACM0
+
 ![](doc/WIndows_Ports.jpg)
 
-## Database
+## Used technologies
+
+* Python library emu_power that interfaces with the Rainforest Automation device. emu-power 1.51: https://pypi.org/project/emu-power/
+* Rainforest Automation EMU-2
+* MySQL
+
+![](doc/Rainforest_Automation_EMU-2.jpg)
+
+
+## Database Setup
 
 Primary MySQL Database Table pse.usage_e
 
@@ -87,83 +143,3 @@ order by
    UDate
 ;
 ```
-
-
-## Program Structure
-
-![](doc/PowerCost_Architecture.png)
-
-
-### Step 1: Command Line or Scheduled Task
-
-Execution can be started from a Windows CMD window or from a Windows Scheduled Task.  The trigger for the Scheduled Task would be System Startup, and the intent here is that this daemon-like process would be guarenteed to run. This automatic start is not required and the command line method is easier to use.
-```
-powershell.exe D:\THEDIR\bin\Ponderosa_Electricity_Usage.ps1 -iniFile D:\THEDIR\Ponderosa_Electricity_Usage.ini
-```
-### Step 2: PowerShell Script: Ponderosa_Electricity_Usage.ps1
-
-The only parameter to the PowerShell script -iniFile FILE or the location of the INI file.  I had to locate a way for PowerShell to read the INI file which was parsing via REGEX the INI lines.  The Python script of the next step uses the ConfigParser import to easily read in the INI data.  Now, both the PowerShell and Python scripts were reading the same INI file.
-
-The purpose of this PowerShell script was to submit pythonw.exe to run the Python script in the background via Start-Process.  So, this PowerShell script acted like the startup of a daemon.
-
-```
-$processOptions = @{
-    FilePath = $python_exec
-    ArgumentList = "$python_script --ini $iniFile"
-    WorkingDirectory = $rundir
-    NoNewWindow = $true
-    PassThru = $true
-}
-$process = Start-Process @processOptions
-```
-
-### Step 3: Python Script: Ponderosa_Electricity_Usage.py
-
-Most of the process logic is in this Python script.
-
-The values are written within an infinite loop and the script must be externally stopped (i.e., killed) if desired.  The script can be run from the command line and it will check a file to see if it is already running.  It will stop if there is another instance running.  
-
-## Program Structure
-
-
-### Functions
-
-I soon realized that I needed to put the values into a database.  This allowed me to use my SQL skills to query the results in different ways.  The next step was to setup a MySQL database to receive the values.
-
-    def insertDB(myDate, myHour, mykWh): A self-contained function to insert a record into the database.
-       class MySignalHandler:
-       def setup(self,thePID,theAR): Initialize signal handler and the variables PID and AR
-       def catch(self, signalNumber, frame): Get the current time, set a message and print the message; remove file indicating the script is running; flush STDOUT and STDERR; call os.kill() to kill itself.
-       def main(): Only runs code if the script is run as a top-level script.
-
-The script has a main() function that contains the most of the code.  main() is used to ensure that the script is run as top-level script.
-
-
-The EMU-2 reports the instantaneous electricity usage when queried of a value in Kilowatt Hours (kWh).  I needed a total electricity for each complete hour.  The script runs indefinitely, takes a reading every minute, and then adds up each minute value until the top of the hour.  At that point, the script divides the total of the minute readings by 60.  This value is inserted into the MySQL table pse.usage_e.
-
-
-### Logic
-
-    * if __name__ == '__main__':
-      * Get command line arguments with parser
-      * Read confifuration file with config
-      * If script-is-executing file exists, exit
-      * Redirect STDOUT and STDERR to log file
-      * Get config values into script variables
-      * Setup signal handler
-      * Create script-is-executing file
-      * Call main()
-    
-    * main():
-      * while True:
-        * If Stop-File exists, exit
-        * Retry loop on call to api.get_instantaneous_demand()
-        * Check if call failed and exit if it did
-        * Get values: demand, divisor, multiplier, kw
-        * Check if we're still in the same hour and add to kWh if so
-        * else write kWh out, stop_serial() and start_serial() to refresh serial connection
-        * Retry loop on start_serial()
-        * Check if it's Midnight and print summary if it is.  Note that this code is obsolete since we're also inserting values into the database.
-        * sleep 60 seconds
-
-
