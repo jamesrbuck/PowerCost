@@ -1,0 +1,107 @@
+<h1>Project Documentation Extracted from Docstrings</h1>
+<h2>File: <code>powercost_project\config.py</code></h2>
+<h3>🧾 Module-level Docstring</h3>
+<p><code>This modules contains both config class: DatabaseConfig and SetupConfig.</code></p>
+<h3>Class: <code>DatabaseConfig</code></h3>
+<p><code>MySQL database configuration settings.</code></p>
+<h3>Class: <code>SetupConfig</code></h3>
+<p><code>Class to handle logging, port configuration settings.</code></p>
+<h3>Class: <code>PonderosaConfig</code></h3>
+<p><code>Class is the entry point into acquiring all configuration settings.  It references
+SetupConfig and DatabaseConfig.</code></p>
+<h3>Function: <code>as_dict</code></h3>
+<p><code>It returns a dictionary of database settings for debugging
+purposes for debugging purposes</code></p>
+<h3>Function: <code>running_file</code></h3>
+<p><code>Returns: running_file</code></p>
+<h3>Function: <code>stop_file</code></h3>
+<p><code>Returns: stop_file</code></p>
+<h3>Function: <code>log_dir</code></h3>
+<p><code>Returns: log_dir</code></p>
+<h3>Function: <code>log_file</code></h3>
+<p><code>Returns: log_file</code></p>
+<h3>Function: <code>log_level</code></h3>
+<p><code>Returns: log_level</code></p>
+<h3>Function: <code>the_port</code></h3>
+<p><code>Returns: port to EMU-2 device</code></p>
+<h3>Function: <code>db_config</code></h3>
+<p><code>Returns: database configuration settings as a dictionary.</code></p>
+<h2>File: <code>powercost_project\database.py</code></h2>
+<h3>🧾 Module-level Docstring</h3>
+<p><code>Handles database activities.</code></p>
+<h3>Class: <code>PonderosaDB</code></h3>
+<p><code>A single class that handles database activities.</code></p>
+<h3>Function: <code>__init__</code></h3>
+<p><code>Initializes the database connection manager.</code></p>
+<h3>Function: <code>__enter__</code></h3>
+<p><code>Connect to the database when PonderosaDB class is instantiated.</code></p>
+<h3>Function: <code>__exit__</code></h3>
+<p><code>Automatically close connection on context exit of PonderosaDB class.</code></p>
+<h3>Function: <code>connect</code></h3>
+<p><code>Establish a new connection to the database.</code></p>
+<h3>Function: <code>close</code></h3>
+<p><code>Close the connection if it is open.</code></p>
+<h3>Function: <code>insert_usage</code></h3>
+<p>```
+Insert an hourly usage record into the database.</p>
+<p>Parameters:
+- date_str: Date in 'YYYY-MM-DD' format
+- hour_str: Time in 'HH:00:00' format
+- kwh: Decimal or float kWh value
+```</p>
+<h3>Function: <code>__str__</code></h3>
+<p><code>Return setting as a string for debugging.</code></p>
+<h2>File: <code>powercost_project\main.py</code></h2>
+<h3>🧾 Module-level Docstring</h3>
+<p><code>This Python code handles the setup of the configuration (in config.py),and
+database (in database.py) classes.  Most of the work is done in the run()
+method.</code></p>
+<h3>Class: <code>PonderosaMonitor</code></h3>
+<p><code>This class encapulates most of the script's logic to isolate responsibilities,
+improve code testability and enable future extensions.</code></p>
+<h3>Function: <code>setup_logging</code></h3>
+<p><code>Set up Python logging based on settings in INI file.</code></p>
+<h3>Function: <code>setup_signal_handler</code></h3>
+<p><code>Since this app runs indefinitely, setup signal handling to
+report being killed from the OS.  These signals are not usually
+sent in Windows.  The presence of a "stop file" triggers a
+graceful shutdown.  In Windows, I have also had to use
+Task Manager + Details + End Task which does not send a
+"signal".  This method would be useful in Linux.</code></p>
+<h3>Function: <code>check_stop_file</code></h3>
+<p><code>This method checks for the existence of a file that indicates that
+this daemon-like program should stop gracefully.</code></p>
+<h3>Function: <code>check_already_running</code></h3>
+<p><code>This method checks for the existence of a file that indicates that
+this daemon-like program is already running.  It cannot run more than
+one instance at a time.  The Force option was intended to be
+used when the program is started by Windows Scheduled Task.  The original
+intention was that Windows would start the task every Midnight and
+if the application was already running, nothing would happen.
+Starting of the application was changed to System Startup.  Now, I
+just manually start feom a script.  Almost daemon.</code></p>
+<h3>Function: <code>wait_until_top_of_hour</code></h3>
+<p><code>The application will only make hourly recordsing that contain
+full 60 separate minute readings.  The application will wait how many seconds
+until the top of the next hour or xx:00 AM/PM before starting.</code></p>
+<h3>Function: <code>start_serial</code></h3>
+<p><code>Starting a serial connection (via USB on Windows) to the EMU-2.  This
+startup may not work the first time so there is retry logic.</code></p>
+<h3>Function: <code>read_demand</code></h3>
+<p><code>Reading from the EMU-2 may not work the first time so there is retry logic.</code></p>
+<h3>Function: <code>run</code></h3>
+<p><code>Almost all of the logic is in this method.  Only the acquisition of the
+parameters is done in main.py.</code></p>
+<h2>File: <code>powercost_project\__init__.py</code></h2>
+<h3>🧾 Module-level Docstring</h3>
+<p><code>Designate this folder as a Python package.  Only main.py - Class PonderosaMonitor
+is accessible from outside of the package.  Initializations are not done here.</code></p>
+<h2>File: <code>powercost_project\__main__.py</code></h2>
+<h3>🧾 Module-level Docstring</h3>
+<p><code>Entry point for project.  _init__.py does not do much.  For now, this code: handles
+arguments passed to the package; there is only one argument: the location of the
+INI file.  This code instantiates the primary controller class PonderosaMonitor
+where control is passed to the run() method to do most of the work.</code></p>
+<h3>Function: <code>main</code></h3>
+<p><code>Entry Point.  This is the only method and it instantiates the PonderosaMonitor
+class and control passes to the run() method.</code></p>

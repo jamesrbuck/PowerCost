@@ -1,23 +1,7 @@
 """
-Filename: Ponderosa_Electricity_Usage.py
-Author: James Buck
-Created: 2025-06-24
-Last Modified: 2025-06-24
-Description: This script processes electricity usage data and inserts that data into a MySQL table.
-
-Additional Description
-
-These scripts are the third iteration of my work.  This whole process has been a
-a great learning experience in Python which supplements my Python courses, kind
-of like a teaching class in Python but focused on my script.
-
-INPUTS:
-   (1) INI file
-   (2) EMU-2 hardware (connected via USB cable that wirelessly talks to my power meter)
-
-OUTPUTS:
-   (1) Log files (as needed)
-   (2) MySQL database table
+This Python code handles the setup of the configuration (in config.py),and
+database (in database.py) classes.  Most of the work is done in the run()
+method.
 """
 
 import sys
@@ -56,7 +40,7 @@ class PonderosaMonitor:
 
     def setup_logging(self):
         '''
-        Set up logging based on settings in INI file.
+        Set up Python logging based on settings in INI file.
         '''
         logging_config  = {
             'version': 1,
@@ -67,12 +51,6 @@ class PonderosaMonitor:
                 },
             },
             'handlers': {
-                #'stderr_handler': {
-                #    'level': self.log_level,
-                #    'formatter': 'default',
-                #    'class': 'logging.StreamHandler',
-                #    'stream': 'ext://sys.stderr',
-                #},
                 'file_handler': {
                     'level': self.log_level,
                     'formatter': 'default',
@@ -93,7 +71,11 @@ class PonderosaMonitor:
     def setup_signal_handler(self):
         '''
         Since this app runs indefinitely, setup signal handling to
-        report being killed from the OS.
+        report being killed from the OS.  These signals are not usually
+        sent in Windows.  The presence of a "stop file" triggers a
+        graceful shutdown.  In Windows, I have also had to use
+        Task Manager + Details + End Task which does not send a
+        "signal".  This method would be useful in Linux.
         '''
         def handler(sig):
             logging.warning("PEU: Signal %s received. Cleaning up and exiting.", sig)
@@ -109,7 +91,7 @@ class PonderosaMonitor:
     def check_stop_file(self):
         '''
         This method checks for the existence of a file that indicates that
-        this daemon-like program should stop (gracefully).
+        this daemon-like program should stop gracefully.
         '''
         if os.path.exists(self.stop_file):
             logging.warning("PEU: Stop file %s detected.", self.stop_file)
@@ -124,11 +106,12 @@ class PonderosaMonitor:
         '''
         This method checks for the existence of a file that indicates that
         this daemon-like program is already running.  It cannot run more than
-        one instance at a time.  The Fo rce option was intended to be
-        used when the program is started by Windows Scheduled Task.  Originally,
-        the Task would fire each Midnight to make sure it was running but
-        this was changed to System Startup.  Yes, I'm not so good at
-        writing daemons.
+        one instance at a time.  The Force option was intended to be
+        used when the program is started by Windows Scheduled Task.  The original
+        intention was that Windows would start the task every Midnight and
+        if the application was already running, nothing would happen.
+        Starting of the application was changed to System Startup.  Now, I
+        just manually start feom a script.  Almost daemon.
         '''
         if os.path.exists(self.running_file):
             logging.warning("PEU: Script already running. Exiting.")
@@ -143,9 +126,9 @@ class PonderosaMonitor:
 
     def wait_until_top_of_hour(self):
         '''
-        The program will only record full hours of 60 minute readings to
-        produce cleaner stats.  The program will wait how many seconds
-        until the top of the next hour or xx:00 AM/PM.
+        The application will only make hourly recordsing that contain
+        full 60 separate minute readings.  The application will wait how many seconds
+        until the top of the next hour or xx:00 AM/PM before starting.
         '''
         now = time.localtime()
         imin = int(time.strftime('%M', now))
@@ -160,8 +143,8 @@ class PonderosaMonitor:
 
     def start_serial(self):
         '''
-        Starting a serial connection (via USB on Windows) to the EMU-2 may not work the first
-        time.
+        Starting a serial connection (via USB on Windows) to the EMU-2.  This
+        startup may not work the first time so there is retry logic.
         '''
         for attempt in range(1, self.MAX_RETRIES + 1):
             if self.log_level == 'INFO':
@@ -176,7 +159,7 @@ class PonderosaMonitor:
 
     def read_demand(self):
         '''
-        Reading from the EMU-2  may not work the first time.
+        Reading from the EMU-2 may not work the first time so there is retry logic.
         '''
         for attempt in range(1, self.DEMAND_RETRIES + 1):
             response = self.emu.get_instantaneous_demand()
@@ -189,7 +172,7 @@ class PonderosaMonitor:
     def run(self, now_str, pid):
         '''
         Almost all of the logic is in this method.  Only the acquisition of the
-        parameters is done in main().
+        parameters is done in main.py.
         '''
         logging.info("PEU: main.py - PonderosaMonitor.run(): Time is %s, PID = %s", now_str, pid)
 
@@ -248,25 +231,3 @@ class PonderosaMonitor:
                 sleep_secs = 60 - int(time.strftime('%S', time.localtime()))
                 time.sleep(sleep_secs)
                 self.check_stop_file()
-
-
-# def main():
-#     """
-#     main() is second call after Python detects the script is being run on its
-#     own via the __name__ value.  It grabs the parameters, instantiates the
-#     monitor class and call the run() method.
-#     """
-#     now = time.localtime()
-#     now_str = time.strftime("%Y-%m-%d %H:%M:%S", now)
-#     pid = os.getpid()
-#     print(f"name={__name__}, main(): Time is {now_str}, PID = {pid}", flush=True)
-
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument('--ini', required=True, help='Path to the INI configuration file')
-#     args = parser.parse_args()
-
-#     monitor = PonderosaMonitor(ini_path=args.ini)
-#     monitor.run(now_str=now_str, pid=pid)
-
-#if __name__ == '__main__':
-#    main()

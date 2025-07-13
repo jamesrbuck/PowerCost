@@ -1,7 +1,9 @@
 """
-Entry point for project.  _init__.py does not do much.
+Entry point for project.  _init__.py does not do much.  For now, this code: handles
+arguments passed to the package; there is only one argument: the location of the
+INI file.  This code instantiates the primary controller class PonderosaMonitor
+where control is passed to the run() method to do most of the work.
 """
-# src/powercostcli.py
 
 import os
 import time
@@ -13,7 +15,8 @@ from  powercost_project import PonderosaMonitor
 
 def main(ini_path: str):
     """
-    Entry Point - Only method
+    Entry Point.  This is the only method and it instantiates the PonderosaMonitor
+    class and control passes to the run() method.
     """
     pid = os.getpid()
 
