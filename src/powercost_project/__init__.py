@@ -3,7 +3,7 @@ Designate this folder as a Python package.  Only main.py - Class PonderosaMonito
 is accessible from outside of the package.  Initializations are not done here.
 """
 
-__version__ = "2.2.0"
+__version__ = "2.2.1"
 
 import time
 import os

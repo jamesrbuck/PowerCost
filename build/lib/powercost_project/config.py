@@ -22,10 +22,8 @@ class DatabaseConfig:
 
     def as_dict(self):
         """
-        Echo database settings for debugging purposes.
-
-        Returns:
-            Dictionary: Database settings
+        It returns a dictionary of database settings for debugging
+        purposes for debugging purposes
         """
         return {
             'user': self.user,
@@ -38,7 +36,7 @@ class DatabaseConfig:
 
 class SetupConfig:
     """
-    Class to handle logging and port configuration settings.
+    Class to handle logging, port configuration settings.
     """
     def __init__(self, config, start_ts):
         try:

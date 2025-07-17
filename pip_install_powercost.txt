@@ -1,0 +1,58 @@
+D:\git\powercost>pip install .
+Processing d:\git\powercost
+  Installing build dependencies ... done
+  Getting requirements to build wheel ... done
+  Preparing metadata (pyproject.toml) ... done
+Requirement already satisfied: emu_power>=1.5.1 in d:\python\lib\site-packages (from powercost==2.2.1) (1.51)
+Requirement already satisfied: mysql.connector in d:\python\lib\site-packages (from powercost==2.2.1) (2.2.9)
+Requirement already satisfied: pyserial in d:\python\lib\site-packages (from emu_power>=1.5.1->powercost==2.2.1) (3.5)
+Building wheels for collected packages: powercost
+  Building wheel for powercost (pyproject.toml) ... done
+  Created wheel for powercost: filename=powercost-2.2.1-py3-none-any.whl size=16789 sha256=ae758d0bd6a2bb9753df4f4e8f93efcc823245ca5b7f2bd479fc981c94e7fc9d
+  Stored in directory: C:\Users\james\AppData\Local\Temp\pip-ephem-wheel-cache-bh3oxec4\wheels\96\d9\62\f760162d64e067d4ca91c0673009d8e93a7494b42bb4f3ed60
+Successfully built powercost
+Installing collected packages: powercost
+Successfully installed powercost-2.2.1
+
+--------------------------
+
+D:\git\powercost>pip show powercost
+Name: powercost
+Version: 2.2.1
+Summary: Calculate electricity usage via EMU_POWER library
+Home-page: https://github.com/jamesrbuck/powercost
+Author:
+Author-email: James Buck <james-buck@outlook.com>
+License:
+Location: D:\Python\Lib\site-packages
+Requires: emu_power, mysql.connector
+Required-by:
+
+----------------------------
+
+D:\git\powercost>pip show --verbose powercost
+Name: powercost
+Version: 2.2.1
+Summary: Calculate electricity usage via EMU_POWER library
+Home-page: https://github.com/jamesrbuck/powercost
+Author:
+Author-email: James Buck <james-buck@outlook.com>
+License:
+Location: D:\Python\Lib\site-packages
+Requires: emu_power, mysql.connector
+Required-by:
+Metadata-Version: 2.4
+Installer: pip
+Classifiers:
+  Development Status :: 3 - Alpha
+  Programming Language :: Python :: 3
+  Intended Audience :: Developers
+  Topic :: Software Development
+Entry-points:
+  [console_scripts]
+  powercost-cli = powercost:main_cli
+
+  [gui_scripts]
+  powercost-gui = powercost:main_cli
+Project-URLs:
+  Homepage, https://github.com/jamesrbuck/powercost

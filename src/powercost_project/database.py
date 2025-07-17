@@ -4,6 +4,11 @@ Handles database activities.
 
 import logging
 import mysql.connector
+
+# NOTE: The app was running against MySQL 8.0 and now it is using 8.4.  I also had to
+#       remove pip_uninstall mysql_connector_python-9.0.0 and pip_install
+#       mysql_connector_python-9.3.0
+
 from mysql.connector import Error
 
 class PonderosaDB:

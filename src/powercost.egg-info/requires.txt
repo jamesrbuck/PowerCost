@@ -1,2 +1,2 @@
-emu_power
+emu_power>=1.5.1
 mysql.connector

@@ -1,17 +1,13 @@
 [project]
 name = "powercost"
-version = "2.2.0"
+version = "2.2.1"
 requires-python = ">= 3.8"
-authors = [
-  {name = "James Buck", email = "james.r.buck425@gmail.com"},
-]
-maintainers = [
-  {name = "James Buck", email = "james.r.buck425@gmail.com"},
-]
-description = "Calculate electricity usage via EMU library"
+authors = [{name = "James Buck", email = "james-buck@outlook.com"}]
+maintainers = [{name = "James Buck", email = "james-buck@outlook.com"}]
+description = "Calculate electricity usage via EMU_POWER library"
 readme = "README.md"
 dependencies = [
-    "emu_power",
+    "emu_power>=1.5.1",
     "mysql.connector",
 ]
 classifiers = [

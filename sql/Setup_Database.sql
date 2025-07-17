@@ -1,6 +1,6 @@
 -- File: Setup_Database.sql
 
-create database pse
+create database pse;
 
 use pse;
 

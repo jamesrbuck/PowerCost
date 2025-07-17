@@ -1,5 +1,6 @@
 README.md
 pyproject.toml
+src/extract_docstrings.py
 src/powercost.egg-info/PKG-INFO
 src/powercost.egg-info/SOURCES.txt
 src/powercost.egg-info/dependency_links.txt

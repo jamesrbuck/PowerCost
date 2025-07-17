@@ -4,11 +4,16 @@ Handles database activities.
 
 import logging
 import mysql.connector
+
+# NOTE: The app was running against MySQL 8.0 and now it is using 8.4.  I also had to
+#       remove pip_uninstall mysql_connector_python-9.0.0 and pip_install
+#       mysql_connector_python-9.3.0
+
 from mysql.connector import Error
 
 class PonderosaDB:
     """
-    Handles database activities.
+    A single class that handles database activities.
     """
     def __init__(self, db_config):
         """
@@ -19,14 +24,14 @@ class PonderosaDB:
 
     def __enter__(self):
         """
-        Enable context manager support (with PonderosaDB(...) as db: ...)
+        Connect to the database when PonderosaDB class is instantiated.
         """
         self.connect()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """
-        Automatically close connection on context exit.
+        Automatically close connection on context exit of PonderosaDB class.
         """
         self.close()
 
@@ -53,7 +58,7 @@ class PonderosaDB:
 
     def insert_usage(self, date_str, hour_str, kwh):
         """
-        Insert a usage record into the database.
+        Insert an hourly usage record into the database.
 
         Parameters:
         - date_str: Date in 'YYYY-MM-DD' format
@@ -82,6 +87,9 @@ class PonderosaDB:
             raise
 
     def __str__(self):
+        '''
+        Return setting as a string for debugging.
+        '''
         return (
             f"DB User = {self.db_config.get('user')}, "
             f"Host = {self.db_config.get('host')}, "
