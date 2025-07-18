@@ -7,13 +7,19 @@
 <p>This Python project interfaces via USB to a hardware device that wirelessly connects to a Puget Sound Energy electrical power meter where it receives an instantaneous kWh reading.  The code takes 60 readings once a minute for an hour, sums them, and calculates an averaged amount of kWh for that hour.  It then inserts that reading into a MySQL database.  Another database could be used with another driver.  The end user can use SQL to select any number of rows to derive daily, weekly, etc counts which can be inserted into an Excel spreadsheet for charting.</p>
 <p><img src="doc/PSE_Power_Meter.jpg" alt="" /></p>
 <h2>Installation</h2>
-<p>Copy project to your PC, change to the root folder of the project and run the following command.  The code needs a Python library for MySQL as an installed MySQL database with a configured table.</p>
-<p><em>To Do: Add step to put project into a ZIP file or something.</em></p>
+<p>Copy project to your PC, change to the root folder of the project and run the following command.</p>
+<p><code>pip install .</code></p>
+<p>The code needs a Python library for MySQL as an installed MySQL database with a configured table.</p>
+<p>I had to make changes when upgrade MySQL from 8.0.42 LTS to 8.4.5 LTS.  I upgraded from the Python library mysql_connector to mysql_connector_python.  I had to switch from MySQL Workbench 8.0.42 to HeidiSQL 12.11.0.7065 due to the upgrade in the MySQL database.  I expect that changing to another database would only require changes to the database.py module.</p>
+<p>I also switched to making this code into a Python module as a learning experience.  This change caused more files to be created in the project.  I ran into permissions issues that should be, but were not, addressed with Python Virtual Environments or venv.  venv would confine library changes but I have not investigated it more.</p>
+<p>I ran commands to upgrade the project’s build:</p>
+<pre><code>python -m build
+</code></pre>
+<p>Normal installation:</p>
 <pre><code>python install .
 </code></pre>
-<h2>Execution and usage: Windows</h2>
-<p>The following example is for a Windows PC.  pythonw.exe is used to submit the code to run in the background without a GUI window.  The end user would need to use nohup to run it on Linux.  No output is expected on stdout and stderr as Python logging is used.
-<em>To Do: Verify code works on Linux.</em></p>
+<h2>Execution and usage: Windows 11</h2>
+<p>The following example is for a Windows PC.  pythonw.exe is used to submit the code to run in the background without a GUI window.  The end user would need to use nohup to run it on Linux.  No output is expected on stdout and stderr as Python logging is used.</p>
 <pre><code>powershell.exe -File runme.ps1
 </code></pre>
 <p>runme1.ps1</p>
@@ -42,6 +48,31 @@ Write-Output &quot;Code sumitted, PID = &quot; + $process.Id
 <li>Linux Port: /dev/ttyACM0</li>
 </ul>
 <p><img src="doc/WIndows_Ports.jpg" alt="" /></p>
+<h2>Execution and usage: Ubuntu 24.04 LTS</h2>
+<p>Running Powercost can be done via a Bash script like:</p>
+<p>runme.sh</p>
+<pre><code>#!/usr/bin/env bash
+
+basedir=&quot;/home/james/powercost&quot;
+cd $basedir
+
+iniFile=&quot;ponderosa_electricity_usage.ini&quot;
+log_start_stdout=&quot;logs/powercost_stdout.txt&quot;
+log_start_stderr=&quot;logs/powercost_stderr.txt&quot;
+
+project=&quot;-m powercost_project --ini $iniFile&quot;
+
+nohup python $project &gt; $log_start_stdout 2&gt; $log_start_stderr &amp;
+</code></pre>
+<p>The [setup] section of the INI file looks:</p>
+<pre><code>[setup]
+the_port = /dev/ttyACM0
+log_dir = /home/james/powercost/logs
+running_file = %(log_dir)s/ponderosa_electricity_usage.running
+stop_file = %(log_dir)s/ponderosa_electricity_usage.stop
+; Levels are: NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL
+log_level = INFO
+</code></pre>
 <h2>Used technologies</h2>
 <ul>
 <li>Python library emu_power that interfaces with the Rainforest Automation device. emu-power 1.51: <a href="https://pypi.org/project/emu-power/">https://pypi.org/project/emu-power/</a></li>

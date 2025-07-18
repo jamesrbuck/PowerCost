@@ -32,7 +32,15 @@ This Python project interfaces via USB to a hardware device that wirelessly conn
 
 ## Installation
 
-Copy project to your PC, change to the root folder of the project and run the following command.  The code needs a Python library for MySQL as an installed MySQL database with a configured table.
+Copy project to your PC, change to the root folder of the project and run the following command.
+
+```pip install .```
+
+The code needs a Python library for MySQL as an installed MySQL database with a configured table.
+
+I had to make changes when upgrade MySQL from 8.0.42 LTS to 8.4.5 LTS.  I upgraded from the Python library mysql_connector to mysql_connector_python.  I had to switch from MySQL Workbench 8.0.42 to HeidiSQL 12.11.0.7065 due to the upgrade in the MySQL database.  I expect that changing to another database would only require changes to the database.py module.
+
+I also switched to making this code into a Python module as a learning experience.  This change caused more files to be created in the project.  I ran into permissions issues that should be, but were not, addressed with Python Virtual Environments or venv.  venv would confine library changes but I have not investigated it more.
 
 *To Do: Add step to put project into a ZIP file or something.*
 
@@ -40,10 +48,9 @@ Copy project to your PC, change to the root folder of the project and run the fo
 python install .
 ```
 
-## Execution and usage: Windows
+## Execution and usage: Windows 11
 
 The following example is for a Windows PC.  pythonw.exe is used to submit the code to run in the background without a GUI window.  The end user would need to use nohup to run it on Linux.  No output is expected on stdout and stderr as Python logging is used.
- *To Do: Verify code works on Linux.*
  
 ```
 powershell.exe -File runme.ps1
@@ -80,6 +87,36 @@ On my Windows 11 desktop PC and Ubuntu 24.04 LTS laptop, there are different des
 
 ![](doc/WIndows_Ports.jpg)
 
+## Execution and usage: Ubuntu 24.04 LTS
+
+Running Powercost can be done via a Bash script like:
+
+runme.sh
+
+```
+#!/usr/bin/env bash
+
+basedir="/home/james/powercost"
+cd $basedir
+
+iniFile="ponderosa_electricity_usage.ini"
+log_start_stdout="logs/powercost_stdout.txt"
+log_start_stderr="logs/powercost_stderr.txt"
+
+project="-m powercost_project --ini $iniFile"
+
+nohup python $project > $log_start_stdout 2> $log_start_stderr &
+```
+The [setup] section of the INI file looks:
+```
+[setup]
+the_port = /dev/ttyACM0
+log_dir = /home/james/powercost/logs
+running_file = %(log_dir)s/ponderosa_electricity_usage.running
+stop_file = %(log_dir)s/ponderosa_electricity_usage.stop
+; Levels are: NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL
+log_level = INFO
+```
 ## Used technologies
 
 * Python library emu_power that interfaces with the Rainforest Automation device. emu-power 1.51: https://pypi.org/project/emu-power/
