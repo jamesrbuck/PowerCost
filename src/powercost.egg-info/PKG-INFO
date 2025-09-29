@@ -42,7 +42,13 @@ I had to make changes when upgrade MySQL from 8.0.42 LTS to 8.4.5 LTS.  I upgrad
 
 I also switched to making this code into a Python module as a learning experience.  This change caused more files to be created in the project.  I ran into permissions issues that should be, but were not, addressed with Python Virtual Environments or venv.  venv would confine library changes but I have not investigated it more.
 
-*To Do: Add step to put project into a ZIP file or something.*
+I ran commands to upgrade the project's build:
+
+```
+python -m build
+```
+
+Normal installation:
 
 ```
 python install .

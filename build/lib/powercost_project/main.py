@@ -21,7 +21,7 @@ class PonderosaMonitor:
     This class encapulates most of the script's logic to isolate responsibilities,
     improve code testability and enable future extensions.
     """
-    MAX_RETRIES = 20
+    MAX_RETRIES = 40
     DEMAND_RETRIES = 15
 
     def __init__(self, ini_path):
@@ -147,14 +147,22 @@ class PonderosaMonitor:
         startup may not work the first time so there is retry logic.
         '''
         for attempt in range(1, self.MAX_RETRIES + 1):
-            if self.log_level == 'INFO':
-                self.emu = Emu(debug=False, fresh_only=True, timeout=5, synchronous=True)
-            else:
-                self.emu = Emu(debug=True, fresh_only=True, timeout=5, synchronous=True)
-            if self.emu.start_serial(self.config.the_port):
-                return
-            logging.warning("PEU: Serial connection attempt %i failed.", attempt)
+            #if self.log_level == 'INFO':
+            #    self.emu = Emu(debug=False, fresh_only=True, timeout=5, synchronous=True)
+            #else:
+            self.emu = Emu(debug=True, fresh_only=True, timeout=5, synchronous=True)
+            self.emu.start_serial(self.config.the_port)
             time.sleep(5)
+            self.emu.get_network_info()
+            print(self.emu.NetworkInfo)
+            return
+            #if self.emu.start_serial(self.config.the_port):
+            #    return
+            #logging.warning("PEU: Serial connection attempt %i failed.", attempt)
+            #time.sleep(5)
+        logging.error("PEU: Serial connection attempts have failed! Exiting ...")
+        self.emu.stop_serial()
+        os.remove(self.running_file)
         raise RuntimeError("Failed to start serial connection.")
 
     def read_demand(self):
@@ -167,6 +175,9 @@ class PonderosaMonitor:
                 return response
             logging.warning("PEU: read_demand(): Demand read attempt %i failed.", attempt)
             time.sleep(10)
+        logging.error("PEU: read_demand(): Demand read attempts have failed! Exiting ...")
+        self.emu.stop_serial()
+        os.remove(self.running_file)
         raise RuntimeError("Failed to read demand after multiple attempts.")
 
     def run(self, now_str, pid):

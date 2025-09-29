@@ -21,7 +21,7 @@ class PonderosaMonitor:
     This class encapulates most of the script's logic to isolate responsibilities,
     improve code testability and enable future extensions.
     """
-    MAX_RETRIES = 20
+    MAX_RETRIES = 40
     DEMAND_RETRIES = 15
 
     def __init__(self, ini_path):
@@ -155,6 +155,9 @@ class PonderosaMonitor:
                 return
             logging.warning("PEU: Serial connection attempt %i failed.", attempt)
             time.sleep(5)
+        logging.error("PEU: Serial connection attempts have failed! Exiting ...")
+        self.emu.stop_serial()
+        os.remove(self.running_file)
         raise RuntimeError("Failed to start serial connection.")
 
     def read_demand(self):
@@ -167,6 +170,9 @@ class PonderosaMonitor:
                 return response
             logging.warning("PEU: read_demand(): Demand read attempt %i failed.", attempt)
             time.sleep(10)
+        logging.error("PEU: read_demand(): Demand read attempts have failed! Exiting ...")
+        self.emu.stop_serial()
+        os.remove(self.running_file)
         raise RuntimeError("Failed to read demand after multiple attempts.")
 
     def run(self, now_str, pid):
