@@ -13,7 +13,7 @@
 # lrwxrwxrwx 1 root root 13 Mar 20 17:30 usb-Rainforest_Automation__Inc._RFA-Z105-2_HW2.7.3_EMU-2-if00 
 #     -> ../../ttyACM0
 
-
+import time
 from emu_power import Emu
 
 print("==> Instantiate api with Emu(synchronous=True)")
@@ -21,7 +21,9 @@ print("==> Instantiate api with Emu(synchronous=True)")
 api = Emu(debug=True,timeout=5,synchronous=True)
 
 print("\n==> api.start_serial() ...")
-api.start_serial("/dev/ttyACM0")
+#api.start_serial("/dev/ttyACM0")
+api.start_serial("COM6")
+time.sleep(5)
 
 print("\n==> response = api.get_device_info() ...")
 response = api.get_device_info()

@@ -146,16 +146,18 @@ class PonderosaMonitor:
         Starting a serial connection (via USB on Windows) to the EMU-2.  This
         startup may not work the first time so there is retry logic.
         '''
+        if self.log_level == 'INFO':
+            self.emu = Emu(debug=False, fresh_only=True, timeout=5, synchronous=True)
+        else:
+            self.emu = Emu(debug=True, fresh_only=True, timeout=5, synchronous=True)
+        self.emu.start_serial(self.config.the_port)
+        time.sleep(5)
         for attempt in range(1, self.MAX_RETRIES + 1):
-            if self.log_level == 'INFO':
-                self.emu = Emu(debug=False, fresh_only=True, timeout=5, synchronous=True)
-            else:
-                self.emu = Emu(debug=True, fresh_only=True, timeout=5, synchronous=True)
-            if self.emu.start_serial(self.config.the_port):
+            if self.emu.start_serial(self.config.the_port) is not None:
                 return
-            logging.warning("PEU: Serial connection attempt %i failed.", attempt)
+            logging.warning("PEU: start_serial() attempt %i failed.", attempt)
             time.sleep(5)
-        logging.error("PEU: Serial connection attempts have failed! Exiting ...")
+        logging.error("PEU: start_serial() attempts have failed! Exiting ...")
         self.emu.stop_serial()
         os.remove(self.running_file)
         raise RuntimeError("Failed to start serial connection.")

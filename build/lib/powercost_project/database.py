@@ -26,14 +26,14 @@ class PonderosaDB:
         """
         Connect to the database when PonderosaDB class is instantiated.
         """
-        #self.connect()
-        #return self
+        self.connect()
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """
         Automatically close connection on context exit of PonderosaDB class.
         """
-        #self.close()
+        self.close()
 
     def connect(self):
         """
@@ -66,11 +66,9 @@ class PonderosaDB:
         - hour_str: Time in 'HH:00:00' format
         - kwh: Decimal or float kWh value
         """
-        #if not self.conn or not self.conn.is_connected():
-        #    raise RuntimeError("Database not connected.")
+        if not self.conn or not self.conn.is_connected():
+            raise RuntimeError("Database not connected.")
 
-        self.connect()
-        
         insert_stmt = (
             "INSERT INTO usage_e (UDate, UTime, kWh) "
             "VALUES (%s, %s, %s)"
@@ -88,8 +86,6 @@ class PonderosaDB:
             logging.error("Failed to insert usage data: %s", err)
             self.conn.rollback()
             raise
-        
-        self.close()
 
     def __str__(self):
         '''
