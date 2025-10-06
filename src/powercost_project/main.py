@@ -219,7 +219,9 @@ class PonderosaMonitor:
                     the_hour_last_str = f"{the_hour_last:02d}:00:00"
                     if minute_count > 0:
                         avg_kwh = minute_sum / minute_count
-                        self.db.insert_usage(date_str, the_hour_last_str, avg_kwh)
+                        # Special Case: Recording data for the 11:00 PM hour happens a little
+                        #               after midnight so we need to use last date.
+                        self.db.insert_usage(the_date_prev, the_hour_last_str, avg_kwh)
                         kwh_day += avg_kwh
                     minute_sum = kw
                     minute_count = 1
