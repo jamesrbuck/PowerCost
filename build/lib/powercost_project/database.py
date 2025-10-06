@@ -4,12 +4,11 @@ Handles database activities.
 
 import logging
 import mysql.connector
+#from mysql.connector import Error
 
 # NOTE: The app was running against MySQL 8.0 and now it is using 8.4.  I also had to
 #       remove pip_uninstall mysql_connector_python-9.0.0 and pip_install
 #       mysql_connector_python-9.3.0
-
-from mysql.connector import Error
 
 class PonderosaDB:
     """
@@ -45,7 +44,7 @@ class PonderosaDB:
                 if not self.conn.is_connected():
                     raise ConnectionError("Connection to MySQL failed.")
                 logging.info("PEU: Database connection established")
-            except Error as err:
+            except Exception as err:
                 logging.error("PEU: Database connection error: %s", err)
                 raise
 
@@ -82,7 +81,7 @@ class PonderosaDB:
                 logging.debug(
                     "PEU: INSERT: insert_stmt = %s, values = date_str=%s, hour_str=%s, kwh=%s",
                     insert_stmt, date_str, hour_str, kwh)
-        except Error as err:
+        except Exception as err:
             logging.error("Failed to insert usage data: %s", err)
             self.conn.rollback()
             raise
