@@ -8,7 +8,7 @@ description = "Calculate electricity usage via EMU_POWER library"
 readme = "README.md"
 dependencies = [
     "emu_power>=1.5.1",
-    "mysql-connector-python",
+    "mysql-connector-python>=9.4.0",
 ]
 classifiers = [
   # How mature is this project? Common values are

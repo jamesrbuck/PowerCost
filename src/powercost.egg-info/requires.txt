@@ -1,2 +1,2 @@
 emu_power>=1.5.1
-mysql-connector-python
+mysql-connector-python>=9.4.0

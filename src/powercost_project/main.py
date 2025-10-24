@@ -137,6 +137,7 @@ class PonderosaMonitor:
 
         self.check_stop_file()
 
+        logging.info(f"wait_until_top_of_hour: Waiting for {sleep_time} seconds at {time.strftime('%Y%m%d-%H%M'),now}.")
         time.sleep(sleep_time)
 
         self.check_stop_file()
@@ -189,7 +190,6 @@ class PonderosaMonitor:
 
         decimal.getcontext().prec = 3
         self.start_serial()
-        self.wait_until_top_of_hour()
 
         the_date_prev = None
         the_hour_last = -1
@@ -198,6 +198,7 @@ class PonderosaMonitor:
         minute_count = 0
 
         with PonderosaDB(self.config.db_config) as self.db:
+            self.wait_until_top_of_hour()
             while True:
                 self.check_stop_file()
 
