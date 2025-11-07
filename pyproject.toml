@@ -9,6 +9,7 @@ readme = "README.md"
 dependencies = [
     "emu_power>=1.5.1",
     "mysql-connector-python>=9.4.0",
+    "pyserial>=3.5",
 ]
 classifiers = [
   # How mature is this project? Common values are

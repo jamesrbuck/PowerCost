@@ -2,6 +2,7 @@
 This modules contains both config class: DatabaseConfig and SetupConfig.
 """
 
+import os
 from configparser import ConfigParser, NoSectionError, NoOptionError
 import logging
 
@@ -11,8 +12,14 @@ class DatabaseConfig:
     """
     def __init__(self, config):
         try:
-            self.user = config.get('database', 'dbUser')
-            self.password = config.get('database', 'dbPassword')
+            #self.user = config.get('database', 'dbUser')
+            #self.password = config.get('database', 'dbPassword')
+
+            self.user     = os.getenv("POWERCOST_USER")
+            self.password = os.getenv("POWERCOST_PASS")
+            if (self.user is None or self.password is None):
+                raise Exception("ERROR: $POWERCOST_USER and/or $POWERCOST_PASS is not set in env!")
+
             self.host = config.get('database', 'dbHost')
             self.name = config.get('database', 'dbName')
             self.raise_on_warnings = config.getboolean('database', 'dbRaiseOnWarnings')
