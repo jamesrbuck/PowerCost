@@ -1,39 +1,37 @@
-# runme.ps1
+# Powershell Script: runme.ps1
 
+# Path to your project root (adjust as needed)
+$projectSrcRoot = "D:\git\powercost"
+$projecExectRoot = "D:\u\apps\powercost"
+
+# Full path to the venv pythonw.exe
+$venvPython = Join-Path $projectSrcRoot "venv\Scripts\pythonw.exe"
+
+# Runtime parameters
 $project = "-m powercost_project"
+$iniFile = Join-Path $projectSrcRoot "ponderosa_electricity_usage.ini"
+$logDir  = Join-Path $projecExectRoot "logs"
 
-$iniFile = "D:\u\apps\powercost\ponderosa_electricity_usage.ini"
+# Startup Log (Running output is in a different log)
+if (!(Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir | Out-Null }
+$log_start_stdout = Join-Path $logDir "powercost_stdout.txt"
+$log_start_stderr = Join-Path $logDir "powercost_stderr.txt"
 
-$log_start_stdout = "logs/powercost_stdout.txt"
-$log_start_stderr = "logs/powercost_stderr.txt"
-
-$PSScriptRoot = "D:\git\powercost"
-$venvPython = "$PSScriptRoot\venv\Scripts\pythonw.exe" &
-    & $venvPython -m powercost_project
-
+# Build process options
 $processOptions = @{
-    FilePath = "pythonw.exe"
-    ArgumentList = "$project --ini $iniFile"
-    WorkingDirectory = "."
+    FilePath = $venvPython
+    ArgumentList = "$project --ini `"$iniFile`""
+    WorkingDirectory = $projectSrcRoot
     NoNewWindow = $true
     PassThru = $true
     RedirectStandardOutput = $log_start_stdout
     RedirectStandardError = $log_start_stderr
 }
+
+# Launch the process
 $process = Start-Process @processOptions
 $mypid = $process.Id
 
-Write-Output "Code sumitted, PID = $mypid"
+Write-Output "Process started with PID = $mypid"
 Write-Output "==> Press Enter to continue..."
-
-Read-Host # Waits for the user to press Enter
-
-#Cannot overwrite variable PID because it is read-only or constant.
-#At D:\u\apps\powercost\runme.ps1:18 char:1
-#+ $pid = $process.Id
-#+ ~~~~~~~~~~~~~~~~~~
-#    + CategoryInfo          : WriteError: (PID:String) [], SessionStateUnauthorizedAccessException
-#    + FullyQualifiedErrorId : VariableNotWritable
-#
-#Code sumitted, PID = 25280
-#==> Press Enter to continue...
+Read-Host
