@@ -13,6 +13,7 @@ Requires-Python: >=3.8
 Description-Content-Type: text/markdown
 Requires-Dist: emu_power>=1.5.1
 Requires-Dist: mysql-connector-python>=9.4.0
+Requires-Dist: pyserial>=3.5
 
 # Powercost
 
