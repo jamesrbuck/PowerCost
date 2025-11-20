@@ -1,12 +1,15 @@
 # Powershell Script: runme.ps1
 
+$now    = Get-Date -Format "yyyyMMdd_HHmmss"
+
 # Path to your project root (adjust as needed)
 $projectSrcRoot = "D:\git\powercost"
 $projectExecRoot = "D:\u\apps\powercost"
 $logDir  = Join-Path $projectExecRoot "logs"
 
-$runme_log = Join-Path $logDir "runme.txt"
-Start-Transcript -Path $runme_log -Append
+$runme = "runme_" + $now + "_startup.txt"
+$runme_path = Join-Path $logDir $runme
+Start-Transcript -Path $runme_path
 
 $venvPython = Join-Path $projectSrcRoot "venv\Scripts\pythonw.exe"
 $project = "-m powercost_project"
@@ -14,8 +17,11 @@ $iniFile = Join-Path $projectSrcRoot "ponderosa_electricity_usage.ini"
 
 # Startup Log (Running output is in a different log)
 if (!(Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir | Out-Null }
-$log_start_stdout = Join-Path $logDir "runme_stdout.txt"
-$log_start_stderr = Join-Path $logDir "runme_stderr.txt"
+$prefix = "runme_" + $now + "_std"
+$stdout = $prefix + "out.txt"
+$stderr = $prefix + "err.txt"
+$log_start_stdout = Join-Path $logDir $stdout
+$log_start_stderr = Join-Path $logDir $stderr
 
 # Build process options
 $processOptions = @{
@@ -44,3 +50,5 @@ $mypid = $process.Id
 
 Write-Output "Process Options = $processOptions\n"
 Write-Output "Process started with PID = $mypid"
+
+Stop-Transcript
