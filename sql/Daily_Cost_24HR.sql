@@ -1,4 +1,4 @@
-use pse;
+use powercost;
 
 -- File: Daily_Cost24HR.sql
 

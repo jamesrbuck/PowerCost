@@ -1,5 +1,5 @@
 delimiter $$
-use pse $$
+use powercost $$
 
 -- File: CalcDailyElectricity_proc.sql
 
@@ -28,7 +28,7 @@ begin
    declare costBelow600 float default 0.0937212;
    declare kWh_total_cost decimal (5,2);
    declare kWh_Total decimal (7,3);
-   
+
    declare l_UDate           date;
    declare l_dow             varchar(15);
    declare l_kWh             decimal(7,3);
@@ -55,14 +55,14 @@ begin
          UDate
    ;
    declare continue handler for not found set finished = true;
-      
+
    set finished = false;
    open cur1;
-   
+
    read_loop: loop
       fetch cur1 into l_UDate, l_dow, l_kWh, l_hours, l_kWh_day_total, l_KwH_24hr_Cost;
       select l_UDate, l_dow, l_kWh, l_hours, l_kWh_day_total, l_KwH_24hr_Cost;
-      if finished then 
+      if finished then
          leave read_loop;
       end if;
    end loop;

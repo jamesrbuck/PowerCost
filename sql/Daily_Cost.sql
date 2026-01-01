@@ -7,7 +7,7 @@
 -- 600 kWh and will not be the final and actual cost which depends on the
 -- total kWh used during the montly billing period.
 
-use pse;
+use powercost;
 
 select
    UDate as Date

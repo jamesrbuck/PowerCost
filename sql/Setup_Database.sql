@@ -2,7 +2,7 @@
 
 create database pse;
 
-use pse;
+use powercost;
 
 select database();
 show tables;
@@ -17,7 +17,7 @@ CREATE TABLE `pse`.`usage_e` (
   UNIQUE INDEX `I_USAGE_E_UNIQUE` (`ID` ASC) VISIBLE)
 COMMENT = 'Puget Sound Energy Electricity Usage for The Ponderosa';
 
--- drop table pse.daily_kwh;
+-- drop table powercost.daily_kwh;
 CREATE TABLE `pse`.`daily_kwh` (
   ID INT NOT NULL AUTO_INCREMENT,
   UDate DATE NOT NULL,

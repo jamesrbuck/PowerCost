@@ -1,7 +1,7 @@
 -- File: General_Selects.sql
 
 -- This file is a working example of SQL statements that I have used against the
--- database.  
+-- database.
 
 select
    UDate,
@@ -9,16 +9,16 @@ select
    UTime,
    kWh
 from
-   pse.usage_e
+   powercost.usage_e
 -- where
 --    UDate = '2024-10-03'
 order by
    UDate, UTime
 ;
 
-delete from pse.usage_e where ID >= 0;
+delete from powercost.usage_e where ID >= 0;
 commit;
-select * from pse.usage_e where UDate = '2025-01-29';
+select * from powercost.usage_e where UDate = '2025-01-29';
 
 -- select
 --    UDate as Date
@@ -28,7 +28,7 @@ select * from pse.usage_e where UDate = '2025-01-29';
 --    ,sum(kWh) as kWh_day_total
 --    ,round(((sum(kWh)/count(kWh))*24*0.105),2) as kWh_day_total_cost
 -- from
---    pse.usage_e
+--    powercost.usage_e
 -- group by
 --    UDate
 -- order by
@@ -43,19 +43,19 @@ select
    ,sum(kWh) as kWh_total
    ,round(((sum(kWh)/count(kWh))*(count(kWh))*0.115433),2) as kWh_cost
 from
-   pse.usage_e
+   powercost.usage_e
 group by
    UDate
 order by
    UDate
 ;
 
-delete from pse.usage_e where UDate = '2025-01-27';
+delete from powercost.usage_e where UDate = '2025-01-27';
 
 -- PSE of September 2024
 -- Your Electric Charge Details (31 days) Rate x Unit = Charge
 -- 1,669 kWh used for service 11/6/2024 - 12/6/2024
--- 
+--
 -- Basic Charge                     $7.49 per month             $  7.49
 -- Electricity
 --    Tier 1 (First 484 kWh Used)   0.115433 484 kWh            $ 55.87
@@ -104,16 +104,16 @@ where
 --   `UTime` time NOT NULL,
 --   `kWh` decimal(7,3) DEFAULT \'0.000\',
 --    PRIMARY KEY (`ID`),
---    UNIQUE KEY `I_USAGE_E_UNIQUE` (`ID`)) 
---    ENGINE=InnoDB 
---    AUTO_INCREMENT=75 
---    DEFAULT 
---    CHARSET=utf8mb4 
---    COLLATE=utf8mb4_0900_ai_ci 
+--    UNIQUE KEY `I_USAGE_E_UNIQUE` (`ID`))
+--    ENGINE=InnoDB
+--    AUTO_INCREMENT=75
+--    DEFAULT
+--    CHARSET=utf8mb4
+--    COLLATE=utf8mb4_0900_ai_ci
 --    COMMENT=\'Puget Sound Energy Electricity Usage for The Ponderosa\''
 
 
-select 
+select
    routine_name,
    routine_type,
    definer,
@@ -132,7 +132,7 @@ where
    -- SELECT VERSION();
 
 -- select count(*) from (
---    select distinct UDate, UTime from pse.usage_e) as dt
+--    select distinct UDate, UTime from powercost.usage_e) as dt
 
 -- create table usage_e_v3 as select * from usage_e;
 -- delete from usage_e;
